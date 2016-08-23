@@ -1,0 +1,22 @@
+#!/usr/bin/php
+<?
+set_include_path("../include");
+require("header.inc.php");
+
+if (empty($argv[1]) || empty($argv[2]) || empty($argv[3])) {
+	die("Usage: $argv[0] " . '$userID $username $password' . "\n");
+}
+
+$userID = $argv[1];
+$username = $argv[2];
+$password = $argv[3];
+$salt = Z_CONFIG::$AUTH_SALT;
+
+echo "Adding new user $username with ID $userID\n";
+Zotero_Users::add($userID, $username);
+
+$hash = SHA1($salt . $password);
+echo "$salt . $password $hash\n";
+$sql = "update users set password=? where userid=?";
+Zotero_DB::query($sql, array($hash, $userID));
+?>

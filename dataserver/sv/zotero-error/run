@@ -1,0 +1,5 @@
+#!/bin/sh
+
+cd /srv/zotero/dataserver/processor/error
+exec 2>&1
+exec chpst -u www-data:www-data php5 daemon.php

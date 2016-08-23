@@ -1,0 +1,3 @@
+uwsgi:
+  plugin: psgi
+  psgi: /srv/zotero/zss/zss.psgi

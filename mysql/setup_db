@@ -1,0 +1,33 @@
+#!/bin/sh
+DB="mysql -h 127.0.0.1 -P 3306 -u root -ppassword"
+
+echo "DROP DATABASE IF EXISTS zotero_master" | $DB
+echo "DROP DATABASE IF EXISTS zotero_shards" | $DB
+echo "DROP DATABASE IF EXISTS zotero_ids" | $DB
+
+echo "CREATE DATABASE zotero_master" | $DB
+echo "CREATE DATABASE zotero_shards" | $DB
+echo "CREATE DATABASE zotero_ids" | $DB
+
+echo "DROP USER zotero@localhost;" | $DB
+
+echo "CREATE USER zotero@localhost IDENTIFIED BY 'foobar';" | $DB
+
+echo "GRANT SELECT, INSERT, UPDATE, DELETE ON zotero_master.* TO zotero@localhost;" | $DB
+echo "GRANT SELECT, INSERT, UPDATE, DELETE ON zotero_shards.* TO zotero@localhost;" | $DB
+echo "GRANT SELECT,INSERT,DELETE ON zotero_ids.* TO zotero@localhost;" | $DB
+
+# Load in master schema
+$DB zotero_master < master.sql
+$DB zotero_master < coredata.sql
+
+# Set up shard info
+echo "INSERT INTO shardHosts VALUES (1, '127.0.0.1', 3306, 'up');" | $DB zotero_master
+echo "INSERT INTO shards VALUES (1, 1, 'zotero_shards', 'up', 0);" | $DB zotero_master
+
+# Load in shard schema
+cat shard.sql | $DB zotero_shards
+cat triggers.sql | $DB zotero_shards
+
+# Load in schema on id server
+cat ids.sql | $DB zotero_ids
