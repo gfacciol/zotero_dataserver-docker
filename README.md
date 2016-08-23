@@ -44,3 +44,13 @@ If the server uses a self-signed certificate an exception should be added to the
     c:Users/<username>/AppData/Roaming/Zotero/Zotero/                        Win
 
 The cert\_override.txt file can be generated with Firefox following (https://groups.google.com/d/msg/zotero-dev/MEwLaptJIzI/PVDAFJiqEgAJ)
+
+
+## Admin users 
+
+    cd /srv/zotero/dataserver/admin 
+    ./add_user 101 testuser  testpassword
+    ./add_user 102 testuser2 testpassword2
+    ./add_group -o testuser -f members -r members -e members testgroup 
+    ./add_groupuser testgroup testuser2 member 
+
