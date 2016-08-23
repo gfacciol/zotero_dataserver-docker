@@ -1,2 +1,1 @@
-# zotero_dataserver-docker
-Docker image for Zotero Data Server 
+# Docker image for Zotero Data Server
