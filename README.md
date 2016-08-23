@@ -54,3 +54,4 @@ The cert\_override.txt file can be generated with Firefox following (https://gro
     ./add_group -o testuser -f members -r members -e members testgroup 
     ./add_groupuser testgroup testuser2 member 
 
+add\_user is a patched version of the original script at git.27o.de that allows to set the password from the command line.
