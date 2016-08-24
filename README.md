@@ -1,4 +1,4 @@
-# Docker image for a Zotero Data Server
+# Docker image for Zotero Data Server
 
 This image was build following the instructions for installing a Zotero dataserver at (http://git.27o.de/dataserver/about/), which is an updated procedure of [this document](https://github.com/Panzerkampfwagen/dataserver/blob/master/misc/Zotero_Data_Server_Installation_Debian.pdf).
 
