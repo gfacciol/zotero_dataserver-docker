@@ -1,9 +1,15 @@
-FROM debian:wheezy-backports
+FROM debian:jessie
 MAINTAINER Gabriele Facciolo <gfacciol@gmail.com>
 # Following http://git.27o.de/dataserver/about/Installation-Instructions-for-Debian-Wheezy.md
 
+
+
+
 # debian packages
-RUN apt-get update && apt-get install -y \
+RUN apt-get update
+RUN echo "mysql-server mysql-server/root_password password password" | debconf-set-selections
+RUN echo "mysql-server mysql-server/root_password_again password password" | debconf-set-selections
+RUN apt-get install -y \
     apache2 libapache2-mod-php5 mysql-server memcached zendframework php5-cli php5-memcached php5-mysql php5-curl \
     apache2 uwsgi uwsgi-plugin-psgi libplack-perl libdigest-hmac-perl libjson-xs-perl libfile-util-perl libapache2-mod-uwsgi libswitch-perl \
     git gnutls-bin runit wget curl net-tools vim build-essential
@@ -32,17 +38,14 @@ RUN cd /srv/zotero/dataserver/include && rm -r Zend && ln -s /usr/share/php/Zend
 #certtool -s --load-privkey /etc/apache2/zotero.key --outfile /etc/apache2/zotero.cert
 ADD apache/zotero.key /etc/apache2/
 ADD apache/zotero.cert /etc/apache2/
-ADD apache/sites-zotero.conf /etc/apache2/sites-available/zotero
+ADD apache/sites-zotero.conf /etc/apache2/sites-enabled/zotero
 ADD apache/dot.htaccess  /srv/zotero/dataserver/htdocs/\.htaccess
-RUN a2enmod ssl && \
-    a2enmod rewrite && \
-    a2ensite zotero
+RUN a2enmod ssl && a2enmod rewrite
 
 #Mysql
 ADD mysql/zotero.cnf /etc/mysql/conf.d/zotero.cnf
 ADD mysql/setup_db /srv/zotero/dataserver/misc/setup_db
 RUN /etc/init.d/mysql start && \
-    mysqladmin -u root password password && \
     cd /srv/zotero/dataserver/misc/ && \
     ./setup_db
 
