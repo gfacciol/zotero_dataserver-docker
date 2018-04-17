@@ -2,9 +2,6 @@ FROM debian:jessie
 MAINTAINER Gabriele Facciolo <gfacciol@gmail.com>
 # Following http://git.27o.de/dataserver/about/Installation-Instructions-for-Debian-Wheezy.md
 
-
-
-
 # debian packages
 RUN apt-get update
 RUN echo "mysql-server mysql-server/root_password password password" | debconf-set-selections
@@ -38,7 +35,7 @@ RUN cd /srv/zotero/dataserver/include && rm -r Zend && ln -s /usr/share/php/Zend
 #certtool -s --load-privkey /etc/apache2/zotero.key --outfile /etc/apache2/zotero.cert
 ADD apache/zotero.key /etc/apache2/
 ADD apache/zotero.cert /etc/apache2/
-ADD apache/sites-zotero.conf /etc/apache2/sites-enabled/zotero
+ADD apache/sites-zotero.conf /etc/apache2/sites-enabled/zotero.conf
 ADD apache/dot.htaccess  /srv/zotero/dataserver/htdocs/\.htaccess
 RUN a2enmod ssl && a2enmod rewrite
 
@@ -61,30 +58,15 @@ RUN cd /etc/service && \
     ln -s ../sv/zotero-error /etc/service/ 
 
 
-
 # ZSS
 RUN git clone --depth=1 git://git.27o.de/zss /srv/zotero/zss && \
     mkdir /srv/zotero/storage && \
     chown www-data:www-data /srv/zotero/storage
 
-ADD zss/zss.yaml /etc/uwsgi/apps-available/
+ADD zss/zss.yaml /etc/uwsgi/apps-enabled/zss.yaml
 ADD zss/ZSS.pm   /srv/zotero/zss/
 ADD zss/zss.psgi /srv/zotero/zss/
-RUN ln -s /etc/uwsgi/apps-available/zss.yaml /etc/uwsgi/apps-enabled 
-# fix uwsgi init scipt (always fails)
-ADD patches/uwsgi /etc/init.d/uwsgi 
-
-
-## failed attempt to install Zotero Web-Library locally
-## not working
-#RUN cd /srv/ && \
-#    git clone --depth=1 --recursive https://github.com/zotero/web-library.git && \
-#    curl -sL https://deb.nodesource.com/setup_4.x | bash - && apt-get install -y nodejs && \
-#    cd /srv/web-library && \
-#    npm install && \
-#    npm install prompt
-
-
+ADD patches/uwsgi /etc/init.d/uwsgi
 
 
 # replace custom /srv/zotero/dataserver/admin/add_user that allows to write the password
@@ -98,9 +80,11 @@ RUN service mysql start && service memcached start && \
     ./add_group -o test -f members -r members -e members testgroup && \
     ./add_groupuser testgroup test2 member 
 
-
+#ADD ./apache/apache2.conf /etc/apache2/apache2.conf
 # docker server startup
 EXPOSE 80 443
+
+VOLUME [ "/var/lib/mysql", "/srv/zotero/storage" ]
 
 CMD service mysql start && \
     service uwsgi start && \
