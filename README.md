@@ -42,7 +42,7 @@ If the server uses a self-signed certificate an exception should be added to the
     ~/.zotero/Profiles/<random>.default/                                  Linux
     c:Users/<username>/AppData/Roaming/Zotero/Zotero/                     Win
 
-The `cert\_override.txt` file can be generated with Firefox as explained here (https://groups.google.com/d/msg/zotero-dev/MEwLaptJIzI/PVDAFJiqEgAJ)
+The `cert\_override.txt` file can be generated with Firefox as explained here (https://groups.google.com/d/msg/zotero-dev/MEwLaptJIzI/PVDAFJiqEgAJ). The override file in this directory corresponds to the self-signed certificate in the apache directory.
 
 
 ## User administration
